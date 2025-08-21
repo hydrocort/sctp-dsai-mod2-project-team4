@@ -1,0 +1,36 @@
+# Minimal Environment for EDA Phase
+# Brazilian E-Commerce + Marketing Funnel Analysis
+
+name: mod2proj
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Python version
+  - python=3.11
+  
+  # Core data analysis
+  - pandas
+  - numpy
+  
+  # Data visualization
+  - matplotlib
+  - seaborn
+  
+  # Jupyter ecosystem
+  - jupyter
+  - jupyterlab
+  - ipykernel
+  
+  # Utilities
+  - pathlib
+  
+  # Pip for additional packages
+  - pip
+  
+  # Minimal pip dependencies
+  - pip:
+    # Kaggle API for dataset download
+    - kaggle
