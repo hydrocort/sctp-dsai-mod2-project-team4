@@ -202,23 +202,7 @@ def derive_seller_acquisition_channel(seller_id, marketing_sellers_dict):
 - **Campaign Details**: Granular campaign information for optimization
 - **Unconverted Leads**: Lead data that didn't convert to deals (for predictive modeling)
 
-### **Enhanced Analytics Capabilities**
-
-**With Dual Fact Tables, you can now analyze:**
-
-1. **Complete Market Performance**: Total marketplace metrics vs marketing-attributed performance
-2. **Customer Lifecycle**: Full customer journey across all sellers and touchpoints
-3. **Seller Ecosystem**: Comprehensive seller performance by acquisition channel
-4. **Cross-Channel Attribution**: Customer and seller behavior across organic and marketing channels
-5. **Market Penetration**: Marketing effectiveness relative to total market opportunity
-6. **Comparative Analysis**: Side-by-side performance of marketing vs organic across all dimensions
-
-### **Implementation Priority**
-
-**Phase 1: Core Schema (Immediate)**
-- Build FactSalesAll from complete e-commerce data
-- Enhance FactSalesMarketing with calculated measures
-- Create dimension tables with enhanced acquisition channels
+### **Implementation next step phases**
 
 **Phase 2: Advanced Analytics (Medium Term)**
 - Add marketing cost allocation
@@ -230,4 +214,3 @@ def derive_seller_acquisition_channel(seller_id, marketing_sellers_dict):
 - Add real-time campaign tracking
 - Implement AI-driven optimization recommendations
 
-This enhanced dual fact table design provides a complete foundation for marketplace analytics while maintaining focused marketing attribution capabilities!
