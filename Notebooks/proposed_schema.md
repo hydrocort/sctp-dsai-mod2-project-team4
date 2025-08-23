@@ -6,13 +6,12 @@
 **Grain**: One row per order item from ALL sellers (marketing + organic)
 **Source**: Full e-commerce datasets
 
-#### **Foreign Keys to Dimensions**
-- `customer_key` → Links to DimCustomer
-- `product_key` → Links to DimProduct  
-- `seller_key` → Links to DimSeller
-- `order_date_key` → Links to DimDate
-- `mql_key` → Links to DimMarketing (NULL for organic)
-- `payment_key` → Links to DimPayment
+#### **Fact Attributes**
+| Column | Source Dataset | Available in Full Data |
+|--------|----------------|------------------------|
+| `order_id` | orders | ✅ Available |
+| `order_item_id` | order_items | ✅ Available |
+| `shipping_limit_date` | order_items | ✅ Available |
 
 #### **Core Measures (Quantitative Data)**
 | Column | Source Dataset | Available in Full Data |
@@ -22,6 +21,14 @@
 | `total_value` | Calculated (price + freight) | 🔄 Needs calculation |
 | `lead_to_purchase_days` | Calculated from dates | 🔄 Only for marketing records |
 | `marketing_cost_allocation` | External cost data | ❌ Not available |
+
+#### **Foreign Keys to Dimensions**
+- `customer_key` → Links to DimCustomer
+- `product_key` → Links to DimProduct  
+- `seller_key` → Links to DimSeller
+- `order_date_key` → Links to DimDate
+- `mql_key` → Links to DimMarketing (NULL for organic)
+- `payment_key` → Links to DimPayment
 
 ### **Lead to Purchase Days Calculation Logic:**
 ```python
@@ -39,13 +46,6 @@ def calculate_lead_to_purchase_days(combined_dataset):
         # Return NaN series if required columns are missing
 ```
     
-
-#### **Additional Fact Attributes**
-| Column | Source Dataset | Available in Full Data |
-|--------|----------------|------------------------|
-| `order_id` | orders | ✅ Available |
-| `order_item_id` | order_items | ✅ Available |
-| `shipping_limit_date` | order_items | ✅ Available |
 
 ---
 
