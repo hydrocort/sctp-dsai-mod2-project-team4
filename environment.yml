@@ -1,5 +1,6 @@
-# Minimal Environment for EDA Phase
+# Complete Environment for Data Engineering & Analytics Project
 # Brazilian E-Commerce + Marketing Funnel Analysis
+# Includes: EDA, Data Pipeline, ML, Orchestration, and Visualization
 
 name: mod2proj
 
@@ -30,7 +31,48 @@ dependencies:
   # Pip for additional packages
   - pip
   
-  # Minimal pip dependencies
+  # Comprehensive pip dependencies for data engineering pipeline
   - pip:
-    # Kaggle API for dataset download
-    - kaggle
+    # ===== DATA INGESTION & APIs =====
+    - kaggle                          # Kaggle API for dataset download
+    
+    # ===== DATA PIPELINE & ELT TOOLS =====
+    - meltano==3.9.1                  # Open-source ELT platform
+    - dbt-core==1.10.9                # Data transformation tool
+    - dbt-bigquery==1.10.1            # BigQuery adapter for dbt
+    - dbt-adapters==1.16.5            # Core adapters for dbt
+    - dbt-common==1.28.0              # Common utilities for dbt
+    - dbt-semantic-interfaces==0.9.0   # Semantic layer interfaces
+    - dbt-extractor==0.6.0            # SQL parsing and extraction
+    - dbt-protos==1.0.348             # Protocol buffers for dbt
+    
+    # ===== DATA QUALITY & TESTING =====
+    - great-expectations==1.5.9       # Data validation and testing
+    
+    # ===== WORKFLOW ORCHESTRATION =====
+    - dagster==1.5.13                 # Modern data orchestrator
+    - dagster-webserver==1.5.13       # Web UI for Dagster
+    - dagster-graphql==1.5.13         # GraphQL API for Dagster
+    - dagster-pipes==1.5.13           # Lightweight integration framework
+    
+    # ===== CLOUD & DATA WAREHOUSE =====
+    - google-cloud-bigquery==3.36.0   # BigQuery client library
+    - google-cloud-core==2.4.3        # Core Google Cloud utilities
+    - google-cloud-storage==2.19.0    # Google Cloud Storage
+    - google-cloud-aiplatform==1.110.0 # AI Platform for ML
+    - google-cloud-dataproc==5.21.0   # Managed Spark/Hadoop service
+    - google-cloud-resource-manager==1.14.2 # Resource management
+    
+    # ===== WEB APPLICATIONS & DASHBOARDS =====
+    - streamlit==1.48.1               # Interactive web apps for ML/data science
+    
+    # ===== ADDITIONAL DEPENDENCIES =====
+    # Note: The following packages are automatically installed as dependencies
+    # but are listed here for transparency and version management:
+    # - sqlalchemy (for database connectivity)
+    # - pandas-gbq (for BigQuery integration with pandas)
+    # - google-auth, google-auth-oauthlib (for authentication)
+    # - pydantic (for data validation)
+    # - click (for CLI tools)
+    # - rich (for beautiful terminal output)
+    # - uvicorn, starlette (for web servers)
