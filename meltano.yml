@@ -1,0 +1,42 @@
+version: 1
+default_environment: dev
+project_id: 0198e02b-9bd4-7ae3-84df-81424053784e
+environments:
+- name: dev
+- name: staging
+- name: prod
+plugins:
+  extractors:
+  - name: tap-duckdb
+    variant: meltanolabs
+    pip_url: git+https://github.com/MeltanoLabs/tap-duckdb.git
+    config:
+      path: olist_data.duckdb
+      start_date: '2016-01-01T00:00:00Z'
+    select:
+    - main-raw_customers.*
+    - main-raw_orders.*
+    - main-raw_order_items.*
+    - main-raw_order_payments.*
+    - main-raw_order_reviews.*
+    - main-raw_products.*
+    - main-raw_sellers.*
+    - main-raw_geolocation.*
+    - main-raw_category_translation.*
+
+  loaders:
+  - name: target-bigquery
+    variant: z3z1ma
+    pip_url: git+https://github.com/z3z1ma/target-bigquery.git
+    config:
+      project: sctp-dsai-468313
+      dataset: olist_raw
+      location: US
+      method: storage_write_api
+      batch_size: 1000
+      fail_fast: true
+      timeout: 600
+      denormalized: false
+      generate_view: false
+      delete_data_before_load: true
+      credentials_path: credentials/sctp-dsai-468313-f5bc3e6b4ebe-innergritx.json

@@ -1,0 +1,61 @@
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'olist_analytics'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'olist_analytics'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+# Configure the three-layer architecture:
+# - staging: Clean, typed data (views for fast development)
+# - marts: Business-ready analytics (tables for performance)
+models:
+  olist_analytics:
+    # Staging models - clean and prepare raw data
+    staging:
+      +materialized: view
+      +schema: olist_staging
+      
+    # Marts models - business-ready analytics
+    marts:
+      +materialized: table
+      +schema: olist_marts
+      
+      # Dimension tables
+      dimensions:
+        +materialized: table
+        +schema: olist_marts
+        
+      # Fact tables  
+      facts:
+        +materialized: table
+        +schema: olist_marts
+
+# Configure seeds
+seeds:
+  olist_analytics:
+    brazil_state_regions:
+      +column_types:
+        state_code: string
+        state_name: string
+        region: string
+        economic_zone: string

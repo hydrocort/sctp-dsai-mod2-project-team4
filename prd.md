@@ -147,6 +147,11 @@ The data pipeline and analytics solution must be capable of answering the follow
 
 Complete seed data includes all 27 Brazilian states plus Federal District covering: AC, AL, AM, AP, BA, CE, DF, ES, GO, MA, MG, MS, MT, PA, PB, PE, PI, PR, RJ, RN, RO, RR, RS, SC, SP, SE, TO.
 
+### Star Schema Diagram
+![Olist E-Commerce Star Schema v2](olist_ecommerce_star_schema_v2.png)
+Note: The brazil_state_regions seed table appears disconnected in the diagram because it doesn't have direct foreign key relationships defined in the schema. Instead, it's used through JOIN operations during the data transformation process in dbt.
+
+
 #### Create the Seed File
 
 ```csv

@@ -6,95 +6,180 @@ This implementation plan provides a step-by-step guide to build the Olist e-comm
 
 ## Prerequisites
 
-- [ ] **Environment Setup**: Activate `mod2proj` conda environment with all dependencies installed per `environment.yml`
-- [ ] **Data Ingestion Complete**: `data_ingestion.py` has been executed and CSV files are available in `./data/` directory
-- [ ] **GCP Project**: Active Google Cloud Project with billing enabled
-- [ ] **Service Account**: GCP service account with BigQuery Admin and Storage Admin permissions
+- [x] **Environment Setup**: Activate `mod2proj` conda environment with all dependencies installed per `environment.yml` ✅
+- [x] **Data Ingestion Complete**: `data_ingestion.py` has been executed and CSV files are available in `./data/` directory ✅
+- [x] **GCP Project**: Active Google Cloud Project with billing enabled ✅
+- [x] **Service Account**: GCP service account with BigQuery Admin and Storage Admin permissions ✅
+
+### ✅ Prerequisites Completion Summary
+
+All prerequisites have been successfully completed:
+
+1. **Environment Setup** ✅
+   - `mod2proj` conda environment is active
+   - All dependencies from `environment.yml` are installed
+   - Environment tested and working
+
+2. **Data Ingestion Complete** ✅
+   - `data_ingestion.py` has been executed successfully
+   - All 9 CSV files are available in `./data/brazilian-ecommerce/` directory:
+     - `olist_customers_dataset.csv`
+     - `olist_orders_dataset.csv`
+     - `olist_order_items_dataset.csv`
+     - `olist_order_payments_dataset.csv`
+     - `olist_order_reviews_dataset.csv`
+     - `olist_products_dataset.csv`
+     - `olist_sellers_dataset.csv`
+     - `olist_geolocation_dataset.csv`
+     - `product_category_name_translation.csv`
+
+3. **GCP Project** ✅
+   - Active Google Cloud Project: `sctp-dsai-468313`
+   - Billing enabled and verified
+   - BigQuery API enabled
+
+4. **Service Account** ✅
+   - Service Account: `bigquery-admin@sctp-dsai-468313.iam.gserviceaccount.com`
+   - BigQuery Admin permissions: Verified ✅
+   - Storage Admin permissions: Available ✅
+   - Authentication tested and working
+   - Credentials securely stored in `./credentials/` directory
+   - Environment variables configured in `.env` file
+
+### 🚀 Ready to Proceed
+
+The project is now fully prepared to begin **Stage 1: Hybrid Data Loading (CSV → DuckDB → BigQuery)**.
 
 ---
 
-## Stage 1: Loading into BigQuery (Meltano)
+## Stage 1: Hybrid Data Loading (CSV → DuckDB → BigQuery)
 
-**Objective**: Set up Meltano to extract CSV data and load into BigQuery raw layer
+**Objective**: Load CSV data reliably into BigQuery using a two-stage hybrid approach to overcome CSV encoding and configuration issues
 
-### 1.1 Meltano Project Initialization
-- [ ] **Initialize Meltano project**
+**Architecture Change**: After encountering multiple issues with direct CSV → BigQuery loading via Meltano (encoding errors, column naming restrictions, row count discrepancies), we implemented a hybrid approach:
+- **Stage 1A**: Direct CSV → DuckDB (native, reliable loading)
+- **Stage 1B**: DuckDB → BigQuery via Meltano (controlled, clean transfer)
+
+### 1A. Direct CSV to DuckDB Loading
+
+**Objective**: Load all CSV files directly into DuckDB for reliable data handling and validation
+
+#### 1A.1 Environment Setup
+- [x] **Install DuckDB in conda environment** ✅
   ```bash
-  cd project-root
-  meltano init meltano-project
-  cd meltano-project
+  conda activate mod2proj
+  pip install duckdb==1.1.3
   ```
 
-- [ ] **Configure Meltano project structure**
-  - [ ] Move `meltano.yml` to project root level
-  - [ ] Update project structure to align with main project
+- [x] **Update environment.yml** ✅
+  - [x] Add `duckdb==1.1.3` to pip dependencies ✅
 
-### 1.2 Meltano Extractors and Loaders Setup
-- [ ] **Install tap-csv extractor**
+#### 1A.2 Create DuckDB Loading Script
+- [x] **Create load_csv_to_duckdb.py** ✅
+  - [x] Implement automatic CSV file detection ✅
+  - [x] Use DuckDB's `read_csv_auto()` for schema inference ✅
+  - [x] Create all 9 raw tables with proper naming convention ✅
+  - [x] Implement data validation and row count verification ✅
+  - [x] Add comprehensive logging and error handling ✅
+
+#### 1A.3 Execute CSV Loading
+- [x] **Load all CSV files into DuckDB** ✅
   ```bash
-  meltano add extractor tap-csv
+  python load_csv_to_duckdb.py
   ```
 
-- [ ] **Install target-bigquery loader**
+- [x] **Verify data loading success** ✅
+  - [x] All 9 CSV files loaded successfully ✅
+  - [x] Total records: 1,550,922 rows across all tables ✅
+  - [x] Database file created: `olist_data.duckdb` ✅
+  - [x] Sample queries validated ✅
+
+**Loaded Tables**:
+- ✅ `raw_customers`: 99,441 rows, 5 columns ✅
+- ✅ `raw_orders`: 99,441 rows, 8 columns ✅
+- ✅ `raw_order_items`: 112,650 rows, 7 columns ✅
+- ✅ `raw_order_payments`: 103,886 rows, 5 columns ✅
+- ✅ `raw_order_reviews`: 99,224 rows, 7 columns ✅ *(minor row filtering by DuckDB)*
+- ✅ `raw_products`: 32,951 rows, 9 columns ✅
+- ✅ `raw_sellers`: 3,095 rows, 4 columns ✅
+- ✅ `raw_geolocation`: 1,000,163 rows, 5 columns ✅
+- ✅ `raw_category_translation`: 71 rows, 2 columns ✅
+
+#### 1A.4 Clean Up Previous Meltano Configuration
+- [x] **Remove problematic configurations** ✅
+  - [x] Removed tap-csv extractor configuration ✅
+  - [x] Removed target-bigquery loader configuration ✅
+  - [x] Preserved Meltano project structure for Stage 1B ✅
+
+**Stage 1A Completion Criteria**:
+- ✅ DuckDB database created successfully ✅
+- ✅ All 9 tables loaded with expected data ✅
+- ✅ Data quality validated (row counts, sample queries) ✅
+- ✅ Ready for Stage 1B transfer to BigQuery ✅
+
+### 1B. DuckDB to BigQuery via Meltano
+
+**Objective**: Use Meltano to extract clean data from DuckDB and load into BigQuery raw layer
+
+#### 1B.1 Meltano Configuration for DuckDB Source
+- [x] **Install tap-duckdb extractor** ✅
+  ```bash
+  meltano add extractor tap-duckdb
+  ```
+
+- [x] **Configure tap-duckdb in meltano.yml** ✅
+  - [x] Set database path to `olist_data.duckdb` ✅
+  - [x] Configure table selection for all 9 raw tables ✅
+  - [x] Set up appropriate schema mappings ✅
+
+#### 1B.2 Configure BigQuery Target
+- [x] **Install/configure target-bigquery loader** ✅
   ```bash
   meltano add loader target-bigquery
   ```
 
-### 1.3 Configure tap-csv for Source Data
-- [ ] **Configure tap-csv in meltano.yml**
-  - [ ] Set up extractors for each CSV file:
-    - `olist_customers_dataset.csv`
-    - `olist_orders_dataset.csv`
-    - `olist_order_items_dataset.csv`
-    - `olist_order_payments_dataset.csv`
-    - `olist_order_reviews_dataset.csv`
-    - `olist_products_dataset.csv`
-    - `olist_sellers_dataset.csv`
-    - `olist_geolocation_dataset.csv`
-    - `product_category_name_translation.csv`
-  - [ ] Configure file paths pointing to `./data/brazilian-ecommerce/`
-  - [ ] Set appropriate CSV parsing options (headers, delimiters)
+- [x] **Set up BigQuery connection** ✅
+  - [x] Configure GCP service account authentication ✅
+  - [x] Set target dataset to `olist_raw` ✅
+  - [x] Configure table naming convention ✅
+  - [x] Set appropriate location and batch settings ✅
 
-### 1.4 Configure target-bigquery
-- [ ] **Set up BigQuery connection**
-  - [ ] Configure GCP service account authentication
-  - [ ] Set target dataset to `olist_raw`
-  - [ ] Configure table naming convention (prefix with `raw_`)
-  - [ ] Set appropriate location (US/EU based on GCP project)
-
-- [ ] **Create service account key file**
-  - [ ] Generate service account key JSON
-  - [ ] Store securely in project (add to .gitignore)
-  - [ ] Configure path in meltano.yml
-
-### 1.5 Test and Execute Data Loading
-- [ ] **Test connections**
+#### 1B.3 Execute DuckDB to BigQuery Transfer
+- [x] **Test connections** ✅
   ```bash
-  meltano invoke tap-csv --discover
+  meltano invoke tap-duckdb --discover
   meltano invoke target-bigquery --version
   ```
 
-- [ ] **Run initial data load**
+- [x] **Run data transfer** ✅
   ```bash
-  meltano run tap-csv target-bigquery
+  meltano run tap-duckdb target-bigquery
   ```
 
-- [ ] **Verify BigQuery tables created**
-  - [ ] Check BigQuery console for `olist_raw` dataset
-  - [ ] Verify all 9 raw tables exist with expected row counts
-  - [ ] Check table schemas match CSV structure
+- [x] **Verify BigQuery tables created** ✅
+  - [x] Check BigQuery console for `olist_raw` dataset ✅
+  - [x] Verify all 9 raw tables exist with correct row counts ✅
+  - [x] Check table schemas match DuckDB structure ✅
+  - [x] Data integrity verified (32,951 rows in products table matches DuckDB) ✅
 
-### 1.6 Create Meltano Schedules
-- [ ] **Set up daily schedule (optional for historical data)**
+#### 1B.4 Create Meltano Schedules (Optional)
+- [ ] **Set up daily schedule for incremental updates**
   ```bash
-  meltano schedule add daily-load --extractor tap-csv --loader target-bigquery --interval @daily
+  meltano schedule add daily-load --extractor tap-duckdb --loader target-bigquery --interval @daily
   ```
 
-**Stage 1 Completion Criteria**:
-- ✅ All 9 raw tables exist in BigQuery `olist_raw` dataset
-- ✅ Row counts match CSV file expectations
-- ✅ Sample data queries return expected results
-- ✅ Meltano configuration is version controlled
+**Stage 1B Completion Criteria**:
+- [ ] All 9 raw tables exist in BigQuery `olist_raw` dataset
+- [ ] Row counts match DuckDB source tables exactly
+- [ ] Sample data queries return expected results
+- [ ] Meltano configuration is version controlled
+- [ ] Data transfer process is reliable and repeatable
+
+**Overall Stage 1 Completion Criteria**:
+- ✅ CSV data successfully loaded into intermediate DuckDB ✅
+- [ ] DuckDB data successfully transferred to BigQuery via Meltano
+- [ ] All data quality validations pass
+- [ ] Pipeline is ready for Stage 2 (dbt transformations)
 
 ---
 
@@ -102,26 +187,26 @@ This implementation plan provides a step-by-step guide to build the Olist e-comm
 
 **Objective**: Set up dbt to transform raw data into staging layer and star schema marts
 
-### 2.1 dbt Project Initialization
-- [ ] **Initialize dbt project**
+### 2.1 dbt Project Initialization ✅
+- [x] **Initialize dbt project** ✅
   ```bash
   dbt init olist_analytics
   cd olist_analytics
   ```
 
-- [ ] **Configure dbt profiles**
-  - [ ] Set up `~/.dbt/profiles.yml` for BigQuery connection
-  - [ ] Configure authentication method (service account key)
-  - [ ] Set location and dataset configurations
+- [x] **Configure dbt profiles** ✅
+  - [x] Set up `~/.dbt/profiles.yml` for BigQuery connection ✅
+  - [x] Configure authentication method (service account key) ✅
+  - [x] Set location and dataset configurations ✅
 
-### 2.2 dbt Project Configuration
-- [ ] **Update dbt_project.yml**
-  - [ ] Set project name: `olist_analytics`
-  - [ ] Configure model paths and schema configurations
-  - [ ] Set staging models to views, marts to tables
-  - [ ] Configure dataset names (staging: `olist_staging`, marts: `olist_marts`)
+### 2.2 dbt Project Configuration ✅
+- [x] **Update dbt_project.yml** ✅
+  - [x] Set project name: `olist_analytics` ✅
+  - [x] Configure model paths and schema configurations ✅
+  - [x] Set staging models to views, marts to tables ✅
+  - [x] Configure dataset names (staging: `olist_staging`, marts: `olist_marts`) ✅
 
-- [ ] **Create directory structure**
+- [x] **Create directory structure** ✅
   ```
   models/
   ├── staging/
@@ -134,23 +219,23 @@ This implementation plan provides a step-by-step guide to build the Olist e-comm
   macros/
   ```
 
-### 2.3 Configure Sources
-- [ ] **Create sources.yml**
-  - [ ] Define `olist_raw` source
-  - [ ] Configure all 9 raw tables as source tables
-  - [ ] Add source descriptions and column documentation
+### 2.3 Configure Sources ✅
+- [x] **Create sources.yml** ✅
+  - [x] Define `olist_raw` source ✅
+  - [x] Configure all 9 raw tables as source tables ✅
+  - [x] Add source descriptions and column documentation ✅
 
 ### 2.4 Create Staging Models
-- [ ] **Create staging models for each source table**:
-  - [ ] `stg_customers.sql` - Type casting, column renaming, basic cleaning
-  - [ ] `stg_orders.sql` - Timestamp parsing, status standardization
-  - [ ] `stg_order_items.sql` - Numeric type conversion, validation
-  - [ ] `stg_order_payments.sql` - Payment type standardization
-  - [ ] `stg_order_reviews.sql` - Score validation, date parsing
-  - [ ] `stg_products.sql` - Dimension calculations, null handling
-  - [ ] `stg_sellers.sql` - Location data cleaning
-  - [ ] `stg_geolocation.sql` - Coordinate validation
-  - [ ] `stg_category_translation.sql` - Text normalization
+- [x] **Create staging models for each source table** ✅:
+  - [x] `stg_customers.sql` - Type casting, column renaming, basic cleaning ✅
+  - [x] `stg_orders.sql` - Timestamp parsing, status standardization ✅
+  - [x] `stg_order_items.sql` - Numeric type conversion, validation ✅
+  - [x] `stg_order_payments.sql` - Payment type standardization ✅
+  - [x] `stg_order_reviews.sql` - Score validation, date parsing ✅
+  - [x] `stg_products.sql` - Dimension calculations, null handling ✅
+  - [x] `stg_sellers.sql` - Location data cleaning ✅
+  - [x] `stg_geolocation.sql` - Coordinate validation ✅
+  - [x] `stg_category_translation.sql` - Text normalization ✅
 
 - [ ] **Implement common transformations**:
   - [ ] Data type conversions (STRING to appropriate types)

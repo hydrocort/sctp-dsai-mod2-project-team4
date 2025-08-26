@@ -35,6 +35,7 @@ dependencies:
   - pip:
     # ===== DATA INGESTION & APIs =====
     - kaggle                          # Kaggle API for dataset download
+    - duckdb==1.1.3                   # Fast in-process analytical database
     
     # ===== DATA PIPELINE & ELT TOOLS =====
     - meltano==3.9.1                  # Open-source ELT platform
