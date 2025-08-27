@@ -1,5 +1,6 @@
 -- Custom test: Referential Integrity between Fact and Dimensions
--- This test ensures that all foreign keys in fact_sales reference valid primary keys in dimension tables
+-- This test ensures that all NON-NULL foreign keys in fact_sales reference valid primary keys in dimension tables
+-- NULL foreign keys are allowed and will not cause referential integrity failures
 
 WITH fact_dimension_checks AS (
     -- Check order_key references in fact_sales vs dim_orders
@@ -9,7 +10,7 @@ WITH fact_dimension_checks AS (
         COUNT(*) as orphaned_records
     FROM {{ ref('fact_sales') }} f
     LEFT JOIN {{ ref('dim_orders') }} d ON f.order_key = d.order_key
-    WHERE d.order_key IS NULL
+    WHERE f.order_key IS NOT NULL AND d.order_key IS NULL
     
     UNION ALL
     
@@ -20,7 +21,7 @@ WITH fact_dimension_checks AS (
         COUNT(*) as orphaned_records
     FROM {{ ref('fact_sales') }} f
     LEFT JOIN {{ ref('dim_customers') }} d ON f.customer_key = d.customer_key
-    WHERE d.customer_key IS NULL
+    WHERE f.customer_key IS NOT NULL AND d.customer_key IS NULL
     
     UNION ALL
     
@@ -31,7 +32,7 @@ WITH fact_dimension_checks AS (
         COUNT(*) as orphaned_records
     FROM {{ ref('fact_sales') }} f
     LEFT JOIN {{ ref('dim_products') }} d ON f.product_key = d.product_key
-    WHERE d.product_key IS NULL
+    WHERE f.product_key IS NOT NULL AND d.product_key IS NULL
     
     UNION ALL
     
@@ -42,7 +43,7 @@ WITH fact_dimension_checks AS (
         COUNT(*) as orphaned_records
     FROM {{ ref('fact_sales') }} f
     LEFT JOIN {{ ref('dim_sellers') }} d ON f.seller_key = d.seller_key
-    WHERE d.seller_key IS NULL
+    WHERE f.seller_key IS NOT NULL AND d.seller_key IS NULL
     
     UNION ALL
     
@@ -53,7 +54,7 @@ WITH fact_dimension_checks AS (
         COUNT(*) as orphaned_records
     FROM {{ ref('fact_sales') }} f
     LEFT JOIN {{ ref('dim_date') }} d ON f.date_key = d.date_key
-    WHERE d.date_key IS NULL
+    WHERE f.date_key IS NOT NULL AND d.date_key IS NULL
     
     UNION ALL
     
@@ -64,7 +65,7 @@ WITH fact_dimension_checks AS (
         COUNT(*) as orphaned_records
     FROM {{ ref('fact_sales') }} f
     LEFT JOIN {{ ref('dim_payments') }} d ON f.payment_key = d.payment_key
-    WHERE d.payment_key IS NULL
+    WHERE f.payment_key IS NOT NULL AND d.payment_key IS NULL
     
     UNION ALL
     

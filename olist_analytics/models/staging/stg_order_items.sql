@@ -1,9 +1,10 @@
 {{
   config(
-    materialized='view'
+    materialized='view',
     schema='staging'
   )
 }}
+
 WITH source AS (
     SELECT * FROM {{ source('olist_raw', 'main_raw_order_items') }}
 ),

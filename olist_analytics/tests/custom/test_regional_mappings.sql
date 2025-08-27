@@ -10,7 +10,7 @@ WITH regional_mapping_checks AS (
         'All 27 Brazilian states + Federal District should be present' as test_description,
         CASE 
             WHEN COUNT(*) = 27 THEN 'PASS'
-            ELSE 'FAIL: Expected 27 states, found ' || COUNT(*)::STRING
+            ELSE 'FAIL: Expected 27 states, found ' || CAST(COUNT(*) AS STRING)
         END as test_result,
         COUNT(*) as state_count
     FROM {{ ref('brazil_state_regions') }}
@@ -23,7 +23,7 @@ WITH regional_mapping_checks AS (
         'No duplicate state codes should exist' as test_description,
         CASE 
             WHEN COUNT(*) = 0 THEN 'PASS'
-            ELSE 'FAIL: Found ' || COUNT(*)::STRING || ' duplicate state codes'
+            ELSE 'FAIL: Found ' || CAST(COUNT(*) AS STRING) || ' duplicate state codes'
         END as test_result,
         COUNT(*) as duplicate_count
     FROM (
@@ -41,7 +41,7 @@ WITH regional_mapping_checks AS (
         'All customers should have regional assignments' as test_description,
         CASE 
             WHEN COUNT(*) = 0 THEN 'PASS'
-            ELSE 'FAIL: Found ' || COUNT(*)::STRING || ' customers without regional assignments'
+            ELSE 'FAIL: Found ' || CAST(COUNT(*) AS STRING) || ' customers without regional assignments'
         END as test_result,
         COUNT(*) as unassigned_count
     FROM {{ ref('dim_customers') }}
@@ -55,7 +55,7 @@ WITH regional_mapping_checks AS (
         'All sellers should have regional assignments' as test_description,
         CASE 
             WHEN COUNT(*) = 0 THEN 'PASS'
-            ELSE 'FAIL: Found ' || COUNT(*)::STRING || ' sellers without regional assignments'
+            ELSE 'FAIL: Found ' || CAST(COUNT(*) AS STRING) || ' sellers without regional assignments'
         END as test_result,
         COUNT(*) as unassigned_count
     FROM {{ ref('dim_sellers') }}
@@ -90,7 +90,7 @@ WITH regional_mapping_checks AS (
         'All state codes should be exactly 2 characters' as test_description,
         CASE 
             WHEN COUNT(*) = 0 THEN 'PASS'
-            ELSE 'FAIL: Found ' || COUNT(*)::STRING || ' invalid state code formats'
+            ELSE 'FAIL: Found ' || CAST(COUNT(*) AS STRING) || ' invalid state code formats'
         END as test_result,
         COUNT(*) as invalid_format_count
     FROM {{ ref('brazil_state_regions') }}
@@ -105,7 +105,7 @@ WITH regional_mapping_checks AS (
         'All states should have valid economic zone assignments' as test_description,
         CASE 
             WHEN COUNT(*) = 0 THEN 'PASS'
-            ELSE 'FAIL: Found ' || COUNT(*)::STRING || ' states without economic zones'
+            ELSE 'FAIL: Found ' || CAST(COUNT(*) AS STRING) || ' states without economic zones'
         END as test_result,
         COUNT(*) as missing_economic_zone_count
     FROM {{ ref('brazil_state_regions') }}
@@ -120,7 +120,7 @@ WITH regional_mapping_checks AS (
         'Regional assignments should be consistent across all tables' as test_description,
         CASE 
             WHEN COUNT(*) = 0 THEN 'PASS'
-            ELSE 'FAIL: Found ' || COUNT(*)::STRING || ' inconsistent regional mappings'
+            ELSE 'FAIL: Found ' || CAST(COUNT(*) AS STRING) || ' inconsistent regional mappings'
         END as test_result,
         COUNT(*) as inconsistent_count
     FROM (
