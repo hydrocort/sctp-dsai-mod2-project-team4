@@ -12,7 +12,6 @@ GOOGLE_APPLICATION_CREDENTIALS
 
 # Data directories (optional - remove if you want to commit data)
 data/
-*.csv
 
 # Database files
 *.duckdb
