@@ -33,27 +33,27 @@ models:
     # Staging models - clean and prepare raw data
     staging:
       +materialized: view
-      +schema: olist_staging
+      +schema: staging
       
     # Marts models - business-ready analytics
     marts:
       +materialized: table
-      +schema: olist_marts
+      +schema: marts
       
       # Dimension tables
       dimensions:
         +materialized: table
-        +schema: olist_marts
+        +schema: marts
         
       # Fact tables  
       facts:
         +materialized: table
-        +schema: olist_marts
+        +schema: marts
 
 # Configure seeds
 seeds:
   olist_analytics:
-    +schema: olist_seed
+    +schema: seed
     brazil_state_regions:
       +column_types:
         state_code: string

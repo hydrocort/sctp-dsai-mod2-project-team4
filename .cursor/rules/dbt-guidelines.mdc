@@ -1,0 +1,46 @@
+---
+description: dbt Development Guidelines for Olist Pipeline
+globs: ["**/*.sql", "**/dbt_project.yml", "**/schema.yml"]
+alwaysApply: false
+---
+
+# dbt Development Guidelines
+
+## Model Structure
+- Use consistent 2-space indentation
+- Prefer CTEs over subqueries for readability
+- Always use `{{ ref() }}` and `{{ source() }}` functions
+- Add descriptions in schema.yml files
+- Use staging models as views, marts as tables
+
+## Naming Conventions
+- Staging models: `stg_*` prefix
+- Dimension models: `dim_*` prefix  
+- Fact models: `fact_*` prefix
+- Use snake_case for all names
+- Be descriptive but concise
+
+## Testing Strategy
+- Primary keys: `not_null` + `unique`
+- Foreign keys: `relationships` test
+- Categorical fields: `accepted_values` test
+- Numeric fields: `dbt_utils.is_positive` where appropriate
+- Business logic: Custom tests for complex validations
+
+## Performance Considerations
+- Use incremental models for large tables when appropriate
+- Optimize joins with proper indexing considerations
+- Use `{{ config(materialized='table') }}` for marts
+- Use `{{ config(materialized='view') }}` for staging
+
+## Data Quality
+- Validate Brazilian state codes consistently
+- Handle NULL values appropriately (especially reviews)
+- Ensure referential integrity between models
+- Test calculated fields for reasonableness
+
+## Documentation
+- Every model needs a description
+- Every column needs a description
+- Document business logic and transformations
+- Use schema.yml files for all model documentation

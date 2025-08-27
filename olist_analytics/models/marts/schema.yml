@@ -1,0 +1,425 @@
+version: 2
+
+models:
+  # Dimension Tables
+  - name: dim_customers
+    description: "Customer dimension table with regional classifications and location data"
+    columns:
+      - name: customer_key
+        description: "Primary key for customer dimension"
+        tests:
+          - not_null
+          - unique
+      - name: customer_unique_id
+        description: "Customer's unique identifier across the platform"
+        tests:
+          - not_null
+      - name: customer_city
+        description: "Customer's city"
+        tests:
+          - not_null
+      - name: customer_state
+        description: "Customer's state (2-letter Brazilian state code)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SP', 'SE', 'TO']
+      - name: customer_zip_prefix
+        description: "Customer's zip code prefix for location"
+        tests:
+          - not_null
+      - name: customer_region
+        description: "Customer's geographic region (North, Northeast, Southeast, South, Central-West)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['North', 'Northeast', 'Southeast', 'South', 'Central-West']
+      - name: customer_economic_zone
+        description: "Customer's economic classification zone"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Amazon', 'Northeast', 'Southeast', 'South', 'Central']
+
+  - name: dim_date
+    description: "Date dimension table for temporal analysis and reporting"
+    columns:
+      - name: date_key
+        description: "Primary key for date dimension (YYYY-MM-DD format)"
+        tests:
+          - not_null
+          - unique
+      - name: full_date
+        description: "Full date in DATE format"
+        tests:
+          - not_null
+      - name: year
+        description: "Year extracted from date"
+        tests:
+          - not_null
+          - dbt_utils.is_between:
+              min_value: 2016
+              max_value: 2020
+      - name: month
+        description: "Month number (1-12)"
+        tests:
+          - not_null
+          - dbt_utils.is_between:
+              min_value: 1
+              max_value: 12
+      - name: month_name
+        description: "Full month name"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+      - name: quarter
+        description: "Quarter number (1-4)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4]
+      - name: day_of_week
+        description: "Day of week number (1-7, where 1=Sunday)"
+        tests:
+          - not_null
+          - dbt_utils.is_between:
+              min_value: 1
+              max_value: 7
+      - name: day_name
+        description: "Full day name"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      - name: is_weekend
+        description: "Boolean flag indicating if date is weekend"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_products
+    description: "Product dimension table with category translations and derived dimensions"
+    columns:
+      - name: product_key
+        description: "Primary key for product dimension"
+        tests:
+          - not_null
+          - unique
+      - name: product_category_portuguese
+        description: "Product category name in Portuguese"
+        tests:
+          - not_null
+      - name: product_category_english
+        description: "Product category name in English"
+        tests:
+          - not_null
+      - name: product_weight_g
+        description: "Product weight in grams"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_length_cm
+        description: "Product length in centimeters"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_height_cm
+        description: "Product height in centimeters"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_width_cm
+        description: "Product width in centimeters"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_volume_cm3
+        description: "Calculated product volume in cubic centimeters"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_photos_qty
+        description: "Number of product photos"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_name_length
+        description: "Length of the product name"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: product_description_length
+        description: "Length of the product description"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+
+  - name: dim_sellers
+    description: "Seller dimension table with regional classifications and location data"
+    columns:
+      - name: seller_key
+        description: "Primary key for seller dimension"
+        tests:
+          - not_null
+          - unique
+      - name: seller_city
+        description: "Seller's city"
+        tests:
+          - not_null
+      - name: seller_state
+        description: "Seller's state (2-letter Brazilian state code)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SP', 'SE', 'TO']
+      - name: seller_zip_prefix
+        description: "Seller's zip code prefix for location"
+        tests:
+          - not_null
+      - name: seller_region
+        description: "Seller's geographic region (North, Northeast, Southeast, South, Central-West)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['North', 'Northeast', 'Southeast', 'South', 'Central-West']
+      - name: seller_economic_zone
+        description: "Seller's economic classification zone"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Amazon', 'Northeast', 'Southeast', 'South', 'Central']
+
+  - name: dim_orders
+    description: "Order dimension table with delivery performance metrics"
+    columns:
+      - name: order_key
+        description: "Primary key for order dimension"
+        tests:
+          - not_null
+          - unique
+      - name: order_status
+        description: "Current status of the order"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'canceled', 'unavailable', 'invoiced', 'processing', 'approved', 'created']
+      - name: order_purchase_timestamp
+        description: "When the order was placed"
+        tests:
+          - not_null
+      - name: order_approved_at
+        description: "When the order was approved"
+      - name: order_delivered_carrier_date
+        description: "When the order was delivered to carrier"
+      - name: order_delivered_customer_date
+        description: "When the order was delivered to customer"
+      - name: order_estimated_delivery_date
+        description: "Estimated delivery date"
+        tests:
+          - not_null
+      - name: days_to_delivery
+        description: "Calculated days from purchase to delivery"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: delivery_vs_estimate_days
+        description: "Difference between actual and estimated delivery days"
+      - name: is_delivered_on_time
+        description: "Boolean flag indicating if delivery was on time"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_payments
+    description: "Payment dimension table with payment method aggregation and flags"
+    columns:
+      - name: payment_key
+        description: "Primary key for payment dimension (order_id based)"
+        tests:
+          - not_null
+          - unique
+      - name: primary_payment_type
+        description: "Most frequent payment type for the order"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      - name: total_installments
+        description: "Sum of payment installments for the order"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: payment_methods_count
+        description: "Count of distinct payment methods used per order"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: uses_credit_card
+        description: "Whether order used credit card payment"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: uses_boleto
+        description: "Whether order used boleto payment"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: uses_voucher
+        description: "Whether order used voucher payment"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_reviews
+    description: "Review dimension table with timing calculations and comment availability flags"
+    columns:
+      - name: review_key
+        description: "Primary key for review dimension (order_id based)"
+        tests:
+          - not_null
+          - unique
+      - name: review_score
+        description: "Review score from 1 to 5"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+      - name: has_comment_title
+        description: "Whether review_comment_title is not null"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: has_comment_message
+        description: "Whether review_comment_message is not null"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: review_creation_date
+        description: "When the review was created"
+        tests:
+          - not_null
+      - name: days_to_review
+        description: "Days from order purchase to review creation"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+
+  # Fact Table
+  - name: fact_sales
+    description: "Central fact table capturing each order item transaction with all relevant measures and dimensional context"
+    columns:
+      - name: order_item_sk
+        description: "Surrogate key for each order item (CONCAT(order_id, '-', order_item_id))"
+        tests:
+          - not_null
+          - unique
+      - name: order_key
+        description: "Reference to DimOrders"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_orders')
+              field: order_key
+      - name: customer_key
+        description: "Reference to DimCustomers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_key
+      - name: product_key
+        description: "Reference to DimProducts"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_key
+      - name: seller_key
+        description: "Reference to DimSellers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_sellers')
+              field: seller_key
+      - name: date_key
+        description: "Reference to DimDate"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: payment_key
+        description: "Reference to DimPayments"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_payments')
+              field: payment_key
+      - name: review_key
+        description: "Reference to DimReviews (nullable - LEFT JOIN approach)"
+        tests:
+          - relationships:
+              to: ref('dim_reviews')
+              field: review_key
+      - name: item_price
+        description: "Price paid for the item"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: freight_value
+        description: "Shipping cost for the item"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: total_item_value
+        description: "Total cost including shipping (price + freight_value)"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: payment_value
+        description: "Total payment amount for order"
+        tests:
+          - not_null
+          - dbt_utils.is_positive
+      - name: quantity
+        description: "Number of items (static value of 1 per row)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1]
+
+  # Seed Table
+  - name: brazil_state_regions
+    description: "Reference seed data for Brazilian state to region mapping"
+    columns:
+      - name: state_code
+        description: "Two-letter Brazilian state code"
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SP', 'SE', 'TO']
+      - name: state_name
+        description: "Full state name"
+        tests:
+          - not_null
+      - name: region
+        description: "Brazilian geographic region (North, Northeast, Southeast, South, Central-West)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['North', 'Northeast', 'Southeast', 'South', 'Central-West']
+      - name: economic_zone
+        description: "Economic classification zone"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Amazon', 'Northeast', 'Southeast', 'South', 'Central']

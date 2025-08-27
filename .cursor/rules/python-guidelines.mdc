@@ -1,0 +1,53 @@
+---
+description: Python Development Guidelines for Olist Pipeline
+globs: ["**/*.py"]
+alwaysApply: false
+---
+
+# Python Development Guidelines
+
+## Code Style
+- Follow PEP 8 style guidelines
+- Use descriptive variable names (avoid abbreviations unless standard)
+- Add docstrings for functions and classes
+- Use type hints where beneficial
+- Handle exceptions with specific error types
+
+## Project-Specific Patterns
+
+### BigQuery Connection
+```python
+@st.cache_resource
+def init_connection():
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    )
+    return bigquery.Client(credentials=credentials)
+```
+
+### Error Handling
+```python
+try:
+    result = operation()
+except SpecificException as e:
+    logger.error(f"Descriptive error message: {e}")
+    raise
+```
+
+### Streamlit Best Practices
+- Use service account authentication (secrets.toml)
+- Implement caching: `@st.cache_data(ttl=600)`
+- Handle connection errors gracefully
+- Create responsive layouts with columns
+
+## Environment Management
+- Always use `mod2proj` conda environment
+- Install dependencies via `environment.yml`
+- Use virtual environments for isolation
+- Document any new dependencies
+
+## Data Processing
+- Handle BigQuery data types appropriately
+- Implement proper error handling for data operations
+- Use pandas for data manipulation when needed
+- Validate data at each processing step

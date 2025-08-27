@@ -1,0 +1,123 @@
+# Olist E-commerce Data Pipeline - Cursor Rules
+
+## Project Context
+You are working on an end-to-end data pipeline for Brazilian e-commerce analytics. Always refer to `prd.md` for complete requirements and `plan.md` for implementation sequence.
+
+**Current Tech Stack**: Python, Meltano, BigQuery, dbt, Great Expectations, Dagster, Streamlit
+**Environment**: `mod2proj` conda environment (see environment.yml)
+**Data Flow**: CSV → Meltano → BigQuery Raw → dbt → BigQuery Marts → Streamlit
+
+## Core Principles
+- **KISS**: Keep solutions simple and understandable
+- **YAGNI**: Only implement what's explicitly required
+- **Readability First**: Code should be self-documenting
+- **Data Quality**: Validate at every transformation step
+
+## Key Architecture Decisions
+- Single mart approach (`olist_marts` dataset)
+- Order item grain for fact table (one row per order item)
+- NULL handling for reviews (LEFT JOIN approach)
+- Brazilian state regional groupings via dbt seed
+- Historical data (no SCD Type 2 needed)
+
+## Technology Guidelines
+
+### Python
+- Follow PEP 8 style guidelines
+- Use descriptive variable names (avoid abbreviations unless standard)
+- Add docstrings for functions and classes
+- Use type hints where beneficial
+- Handle exceptions with specific error types
+
+### SQL/dbt
+- Use consistent 2-space indentation
+- Prefer CTEs over subqueries for readability
+- Always use `{{ ref() }}` and `{{ source() }}` functions
+- Add descriptions in schema.yml files
+- Use staging models as views, marts as tables
+
+### Configuration Files
+- Add comments explaining non-obvious settings
+- Use environment variables for secrets
+- Version control all configs except secrets
+
+### Streamlit
+- Use service account authentication (secrets.toml)
+- Implement caching: `@st.cache_data(ttl=600)`
+- Handle connection errors gracefully
+- Create responsive layouts with columns
+
+## File Structure Awareness
+When working in specific directories, understand the context:
+- `/olist_analytics/models/staging/` - Data type conversion, cleaning
+- `/olist_analytics/models/marts/dimensions/` - Business dimensions
+- `/olist_analytics/models/marts/facts/` - Analytical fact tables
+- `/streamlit_dashboard/` - Interactive analytics interface
+- `/great_expectations/` - Data quality validation
+
+## Business Context
+**8 Business Questions to Answer**:
+1. Monthly sales trends
+2. Top products/categories performance
+3. Geographic sales distribution  
+4. Customer purchase behavior
+5. Payment method impact
+6. Seller performance by region
+7. Reviews-sales correlation (handle NULLs properly)
+8. Delivery time patterns
+
+## Code Quality Standards
+- Write tests for critical business logic
+- Use meaningful commit messages
+- Document complex transformations
+- Validate data at each pipeline stage
+- Keep functions focused and single-purpose
+
+## Common Patterns to Follow
+
+### BigQuery Connection
+```python
+@st.cache_resource
+def init_connection():
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    )
+    return bigquery.Client(credentials=credentials)
+```
+
+### dbt Model Template
+```sql
+{{ config(materialized='table') }}
+
+SELECT 
+    primary_key,
+    business_field,
+    calculated_metric
+FROM {{ ref('source_model') }}
+WHERE data_quality_filter
+```
+
+### Error Handling
+```python
+try:
+    result = operation()
+except SpecificException as e:
+    logger.error(f"Descriptive error message: {e}")
+    raise
+```
+
+## Important Reminders
+- Always validate Brazilian state codes (AC, AL, AM, AP, BA, CE, DF, ES, GO, MA, MG, MS, MT, PA, PB, PE, PI, PR, RJ, RN, RO, RR, RS, SC, SP, SE, TO)
+- Review keys can be NULL in fact table (intentional design)
+- Use proper data types (avoid all STRING in BigQuery)
+- Focus on analytical query performance
+- Test with sample data before full pipeline runs
+
+## Development Workflow
+1. Reference prd.md for requirements
+2. Check plan.md for current implementation stage
+3. Implement incrementally and test each step
+4. Validate data quality after each transformation
+5. Document significant decisions or changes
+
+When implementing features, always consider the end goal: reliable analytics pipeline that produces accurate, fast dashboards for business decision-making.

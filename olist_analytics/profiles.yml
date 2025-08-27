@@ -1,7 +1,7 @@
 olist_analytics:
   outputs:
     dev:
-      dataset: olist_analytics
+      dataset: olist
       job_execution_timeout_seconds: 300
       job_retries: 1
       keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"

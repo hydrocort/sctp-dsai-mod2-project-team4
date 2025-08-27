@@ -169,17 +169,17 @@ The project is now fully prepared to begin **Stage 1: Hybrid Data Loading (CSV �
   ```
 
 **Stage 1B Completion Criteria**:
-- [ ] All 9 raw tables exist in BigQuery `olist_raw` dataset
-- [ ] Row counts match DuckDB source tables exactly
-- [ ] Sample data queries return expected results
-- [ ] Meltano configuration is version controlled
-- [ ] Data transfer process is reliable and repeatable
+- [x] All 9 raw tables exist in BigQuery `olist_raw` dataset
+- [x] Row counts match DuckDB source tables exactly
+- [x] Sample data queries return expected results
+- [x] Meltano configuration is version controlled
+- [x] Data transfer process is reliable and repeatable
 
 **Overall Stage 1 Completion Criteria**:
 - ✅ CSV data successfully loaded into intermediate DuckDB ✅
-- [ ] DuckDB data successfully transferred to BigQuery via Meltano
-- [ ] All data quality validations pass
-- [ ] Pipeline is ready for Stage 2 (dbt transformations)
+- ✅ DuckDB data successfully transferred to BigQuery via Meltano ✅
+- ✅ All data quality validations pass ✅
+- ✅ Pipeline is ready for Stage 2 (dbt transformations) ✅
 
 ---
 
@@ -294,15 +294,15 @@ The project is now fully prepared to begin **Stage 1: Hybrid Data Loading (CSV �
   - [x] Include all required measures and foreign keys
 
 ### 2.8 dbt Testing and Documentation
-- [ ] **Create schema.yml files**
-  - [ ] Document all models, columns, and relationships
-  - [ ] Add data quality tests (not_null, unique, relationships)
-  - [ ] Create accepted_values tests for categorical fields
+- [x] **Create schema.yml files** ✅
+  - [x] Document all models, columns, and relationships ✅
+  - [x] Add data quality tests (not_null, unique, relationships) ✅
+  - [x] Create accepted_values tests for categorical fields ✅
 
-- [ ] **Implement custom tests**
-  - [ ] Test referential integrity between fact and dimensions
-  - [ ] Validate business logic (total_item_value calculation)
-  - [ ] Test regional mappings completeness
+- [x] **Implement custom tests** ✅
+  - [x] Test referential integrity between fact and dimensions ✅
+  - [x] Validate business logic (total_item_value calculation) ✅
+  - [x] Test regional mappings completeness ✅
 
 ### 2.9 Execute dbt Transformations
 - [ ] **Run dbt models**
