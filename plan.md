@@ -237,62 +237,61 @@ The project is now fully prepared to begin **Stage 1: Hybrid Data Loading (CSV �
   - [x] `stg_geolocation.sql` - Coordinate validation ✅
   - [x] `stg_category_translation.sql` - Text normalization ✅
 
-- [ ] **Implement common transformations**:
-  - [ ] Data type conversions (STRING to appropriate types)
-  - [ ] Trim whitespace and standardize text fields
-  - [ ] Parse timestamps to proper TIMESTAMP type
-  - [ ] Remove Meltano metadata columns
-  - [ ] Apply basic data quality filters
+- [x] **Implement common transformations**:
+  - [x] Data type conversions (STRING to appropriate types)
+  - [x] Trim whitespace and standardize text fields
+  - [x] Parse timestamps to proper TIMESTAMP type
+  - [x] Apply basic data quality filters
 
 ### 2.5 Create Seed Files
-- [ ] **Create brazil_state_regions.csv seed file**
-  - [ ] Include all 27 Brazilian states + Federal District
-  - [ ] Add columns: state_code, state_name, region, economic_zone
-  - [ ] Configure seed in dbt_project.yml with proper column types
+- [x] **Create brazil_state_regions.csv seed file**
+  - [x] Include all 27 Brazilian states + Federal District
+  - [x] Add columns: state_code, state_name, region, economic_zone
+  - [x] Configure seed in dbt_project.yml with proper column types
 
 ### 2.6 Create Dimension Models
-- [ ] **Create dimension models in marts/dimensions/**:
+- [x] **Create dimension models in marts/dimensions/**: ✅
 
-- [ ] **dim_date.sql**
-  - [ ] Generate date dimension from order timestamps
-  - [ ] Include: date_key, full_date, year, month, month_name, quarter, day_of_week, day_name, is_weekend
+- [x] **dim_date.sql** ✅
+  - [x] Generate date dimension from order timestamps
+  - [x] Include: date_key, full_date, year, month, month_name, quarter, day_of_week, day_name, is_weekend
 
-- [ ] **dim_customers.sql**
-  - [ ] Join staging customers with regional seed data
-  - [ ] Include regional groupings via seed table join
+- [x] **dim_customers.sql** ✅
+  - [x] Join staging customers with regional seed data
+  - [x] Include regional groupings via seed table join
 
-- [ ] **dim_products.sql**
-  - [ ] Join products with category translations
-  - [ ] Calculate product_volume_cm3 with null handling
-  - [ ] Include all product attributes and derived fields
+- [x] **dim_products.sql** ✅
+  - [x] Join products with category translations
+  - [x] Calculate product_volume_cm3 with null handling
+  - [x] Include all product attributes and derived fields
 
-- [ ] **dim_sellers.sql**
-  - [ ] Join sellers with regional seed data
-  - [ ] Include regional classifications
+- [x] **dim_sellers.sql** ✅
+  - [x] Join sellers with regional seed data
+  - [x] Include regional classifications
 
-- [ ] **dim_orders.sql**
-  - [ ] Calculate delivery performance metrics
-  - [ ] Implement days_to_delivery and is_delivered_on_time calculations
-  - [ ] Handle null delivery dates appropriately
+- [x] **dim_orders.sql** ✅
+  - [x] Calculate delivery performance metrics
+  - [x] Implement days_to_delivery and is_delivered_on_time calculations
+  - [x] Handle null delivery dates appropriately
 
-- [ ] **dim_payments.sql**
-  - [ ] Aggregate payment methods per order
-  - [ ] Create payment type flags (uses_credit_card, uses_boleto, uses_voucher)
-  - [ ] Calculate total installments and payment method counts
+- [x] **dim_payments.sql** ✅
+  - [x] Aggregate payment methods per order
+  - [x] Create payment type flags (uses_credit_card, uses_boleto, uses_voucher)
+  - [x] Calculate total installments and payment method counts
 
-- [ ] **dim_reviews.sql**
-  - [ ] Calculate review timing metrics
-  - [ ] Create comment availability flags
-  - [ ] Handle review-to-order date calculations
+- [x] **dim_reviews.sql** ✅
+  - [x] Calculate review timing metrics
+  - [x] Create comment availability flags
+  - [x] Handle review-to-order date calculations
 
 ### 2.7 Create Fact Table
-- [ ] **Create fact_sales.sql**
-  - [ ] Implement order item grain (one row per order item)
-  - [ ] Create surrogate key: CONCAT(order_id, '-', order_item_id)
-  - [ ] Join all necessary staging tables
-  - [ ] Implement LEFT JOIN for reviews (nullable foreign key)
-  - [ ] Calculate total_item_value (price + freight_value)
-  - [ ] Include all required measures and foreign keys
+- [x] **Create fact_sales.sql** ✅
+  - [x] Implement order item grain (one row per order item)
+  - [x] Create surrogate key: CONCAT(order_id, '-', order_item_id)
+  - [x] Join all necessary staging tables
+  - [x] Implement LEFT JOIN for reviews (nullable foreign key)
+  - [x] Calculate total_item_value (price + freight_value)
+  - [x] Include all required measures and foreign keys
 
 ### 2.8 dbt Testing and Documentation
 - [ ] **Create schema.yml files**
@@ -327,11 +326,11 @@ The project is now fully prepared to begin **Stage 1: Hybrid Data Loading (CSV �
   - [ ] Test sample analytical queries
 
 **Stage 2 Completion Criteria**:
-- ✅ All staging models execute successfully
-- ✅ All dimension tables populated with expected data
-- ✅ Fact table contains correct grain and measures
-- ✅ All dbt tests pass
-- ✅ Sample business questions can be answered with marts data
+- [ ] All staging models execute successfully
+- [ ] All dimension tables populated with expected data
+- [ ] Fact table contains correct grain and measures
+- [ ] All dbt tests pass
+- [ ] Sample business questions can be answered with marts data
 
 ---
 

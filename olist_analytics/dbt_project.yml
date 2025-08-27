@@ -53,6 +53,7 @@ models:
 # Configure seeds
 seeds:
   olist_analytics:
+    +schema: olist_seed
     brazil_state_regions:
       +column_types:
         state_code: string

@@ -111,12 +111,23 @@ meltano invoke tap-duckdb target-bigquery
 # Navigate to dbt project
 cd olist_analytics
 
+# Export Google Application Credentials (if not already done)
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials/service-account-key.json"
+
 # Install dependencies
 dbt deps
+
+# Run dbt debug to ensure everything is configured correctly
+dbt debug
 
 # Build models (only if not already done)
 dbt build
 ```
+
+**Important Notes:**
+- **Google Credentials**: You must set `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to your service account JSON file
+- **dbt deps**: It's normal if no packages are found - this just means no external dependencies are configured
+- **dbt debug**: Always run this first to verify your BigQuery connection and configuration are working properly
 
 **Skip `dbt build` if:**
 - Models are already built in BigQuery
