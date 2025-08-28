@@ -305,13 +305,13 @@ The project is now fully prepared to begin **Stage 1: Hybrid Data Loading (CSV â
   - [x] Test regional mappings completeness âœ…
 
 ### 2.9 Execute dbt Transformations
-- [ ] **Run dbt models**
+- [x] **Run dbt models**
   ```bash
   dbt deps  # Install any packages
   dbt seed  # Load seed data
   dbt run   # Execute all models
   dbt test  # Run all tests
-  ```
+```
 
 - [ ] **Generate documentation**
   ```bash

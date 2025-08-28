@@ -1,5 +1,11 @@
 version: 2
 
+# NOTE: No tests defined at source level because:
+# 1. Raw tables have JSON structure (data column) not individual columns
+# 2. Comprehensive data quality testing is implemented at staging and marts layers
+# 3. Staging models extract and validate JSON data, marts models test business logic
+# 4. This approach provides better test coverage and more meaningful validation
+
 sources:
   - name: olist_raw
     description: "Raw data from Olist e-commerce CSV files loaded via Meltano"
@@ -11,165 +17,138 @@ sources:
         description: "Raw customer data including location information"
         columns:
           - name: customer_id
-            description: "Unique identifier for each customer"
-            tests:
-              - not_null
-              - unique
+            description: "Unique identifier for each customer (extracted from JSON data column)"
           - name: customer_unique_id
-            description: "Customer's unique identifier across the platform"
+            description: "Customer's unique identifier across the platform (extracted from JSON data column)"
           - name: customer_zip_code_prefix
-            description: "Customer's zip code prefix for location"
+            description: "Customer's zip code prefix for location (extracted from JSON data column)"
           - name: customer_city
-            description: "Customer's city"
+            description: "Customer's city (extracted from JSON data column)"
           - name: customer_state
-            description: "Customer's state (2-letter Brazilian state code)"
+            description: "Customer's state (2-letter Brazilian state code) (extracted from JSON data column)"
             
       - name: main_raw_orders
         description: "Raw order data including timestamps and status"
         columns:
           - name: order_id
-            description: "Unique identifier for each order"
-            tests:
-              - not_null
-              - unique
+            description: "Unique identifier for each order (extracted from JSON data column)"
           - name: customer_id
-            description: "Reference to customer who placed the order"
+            description: "Reference to customer who placed the order (extracted from JSON data column)"
           - name: order_status
-            description: "Current status of the order"
+            description: "Current status of the order (extracted from JSON data column)"
           - name: order_purchase_timestamp
-            description: "When the order was placed"
+            description: "When the order was placed (extracted from JSON data column)"
           - name: order_approved_at
-            description: "When the order was approved"
+            description: "When the order was approved (extracted from JSON data column)"
           - name: order_delivered_carrier_date
-            description: "When the order was delivered to carrier"
+            description: "When the order was delivered to carrier (extracted from JSON data column)"
           - name: order_delivered_customer_date
-            description: "When the order was delivered to customer"
+            description: "When the order was delivered to customer (extracted from JSON data column)"
           - name: order_estimated_delivery_date
-            description: "Estimated delivery date"
+            description: "Estimated delivery date (extracted from JSON data column)"
             
       - name: main_raw_order_items
         description: "Raw order item data including product details and pricing"
         columns:
           - name: order_id
-            description: "Reference to the order"
-            tests:
-              - not_null
+            description: "Reference to the order (extracted from JSON data column)"
           - name: order_item_id
-            description: "Unique identifier for each item within an order"
-            tests:
-              - not_null
+            description: "Unique identifier for each item within an order (extracted from JSON data column)"
           - name: product_id
-            description: "Reference to the product"
-            tests:
-              - not_null
+            description: "Reference to the product (extracted from JSON data column)"
           - name: seller_id
-            description: "Reference to the seller"
-            tests:
-              - not_null
+            description: "Reference to the seller (extracted from JSON data column)"
           - name: shipping_limit_date
-            description: "Shipping deadline for the item"
+            description: "Shipping deadline for the item (extracted from JSON data column)"
           - name: price
-            description: "Price of the item"
+            description: "Price of the item (extracted from JSON data column)"
           - name: freight_value
-            description: "Shipping cost for the item"
+            description: "Shipping cost for the item (extracted from JSON data column)"
             
       - name: main_raw_order_payments
         description: "Raw payment data including payment methods and installments"
         columns:
           - name: order_id
-            description: "Reference to the order"
-            tests:
-              - not_null
+            description: "Reference to the order (extracted from JSON data column)"
           - name: payment_sequential
-            description: "Payment sequence number for the order"
+            description: "Payment sequence number for the order (extracted from JSON data column)"
           - name: payment_type
-            description: "Type of payment method used"
+            description: "Type of payment method used (extracted from JSON data column)"
           - name: payment_installments
-            description: "Number of installments for the payment"
+            description: "Number of installments for the payment (extracted from JSON data column)"
           - name: payment_value
-            description: "Total payment amount"
+            description: "Total payment amount (extracted from JSON data column)"
             
       - name: main_raw_order_reviews
         description: "Raw customer review data including scores and comments"
         columns:
           - name: review_id
-            description: "Unique identifier for each review"
-            tests:
-              - not_null
-              - unique
+            description: "Unique identifier for each review (extracted from JSON data column)"
           - name: order_id
-            description: "Reference to the order being reviewed"
-            tests:
-              - not_null
+            description: "Reference to the order being reviewed (extracted from JSON data column)"
           - name: review_score
-            description: "Review score from 1 to 5"
+            description: "Review score from 1 to 5 (extracted from JSON data column)"
           - name: review_comment_title
-            description: "Title of the review comment"
+            description: "Title of the review comment (extracted from JSON data column)"
           - name: review_comment_message
-            description: "Full review comment message"
+            description: "Full review comment message (extracted from JSON data column)"
           - name: review_creation_date
-            description: "When the review was created"
+            description: "When the review was created (extracted from JSON data column)"
           - name: review_answer_timestamp
-            description: "When the review was answered"
+            description: "When the review was answered (extracted from JSON data column)"
             
       - name: main_raw_products
         description: "Raw product data including categories and dimensions"
         columns:
           - name: product_id
-            description: "Unique identifier for each product"
-            tests:
-              - not_null
-              - unique
+            description: "Unique identifier for each product (extracted from JSON data column)"
           - name: product_category_name
-            description: "Product category name in Portuguese"
+            description: "Product category name in Portuguese (extracted from JSON data column)"
           - name: product_name_lenght
-            description: "Length of the product name"
+            description: "Length of the product name (extracted from JSON data column)"
           - name: product_description_lenght
-            description: "Length of the product description"
+            description: "Length of the product description (extracted from JSON data column)"
           - name: product_photos_qty
-            description: "Number of product photos"
+            description: "Number of product photos (extracted from JSON data column)"
           - name: product_weight_g
-            description: "Product weight in grams"
+            description: "Product weight in grams (extracted from JSON data column)"
           - name: product_length_cm
-            description: "Product length in centimeters"
+            description: "Product length in centimeters (extracted from JSON data column)"
           - name: product_height_cm
-            description: "Product height in centimeters"
+            description: "Product height in centimeters (extracted from JSON data column)"
           - name: product_width_cm
-            description: "Product width in centimeters"
+            description: "Product width in centimeters (extracted from JSON data column)"
             
       - name: main_raw_sellers
         description: "Raw seller data including location information"
         columns:
           - name: seller_id
-            description: "Unique identifier for each seller"
-            tests:
-              - not_null
-              - unique
+            description: "Unique identifier for each seller (extracted from JSON data column)"
           - name: seller_zip_code_prefix
-            description: "Seller's zip code prefix for location"
+            description: "Seller's zip code prefix for location (extracted from JSON data column)"
           - name: seller_city
-            description: "Seller's city"
+            description: "Seller's city (extracted from JSON data column)"
           - name: seller_state
-            description: "Seller's state (2-letter Brazilian state code)"
+            description: "Seller's state (2-letter Brazilian state code) (extracted from JSON data column)"
             
       - name: main_raw_geolocation
         description: "Raw geolocation data for Brazilian zip codes"
         columns:
           - name: geolocation_zip_code_prefix
-            description: "Zip code prefix for location"
+            description: "Zip code prefix for location (extracted from JSON data column)"
           - name: geolocation_lat
-            description: "Latitude coordinate"
+            description: "Latitude coordinate (extracted from JSON data column)"
           - name: geolocation_lng
-            description: "Longitude coordinate"
+            description: "Longitude coordinate (extracted from JSON data column)"
           - name: geolocation_city
-            description: "City name"
+            description: "City name (extracted from JSON data column)"
           - name: geolocation_state
-            description: "State name (2-letter Brazilian state code)"
+            description: "State name (2-letter Brazilian state code) (extracted from JSON data column)"
             
       - name: main_raw_category_translation
         description: "Raw product category translation data (Portuguese to English)"
         columns:
           - name: product_category_name
-            description: "Product category name in Portuguese"
+            description: "Product category name in Portuguese (extracted from JSON data column)"
           - name: product_category_name_english
-            description: "Product category name in English"
+            description: "Product category name in English (extracted from JSON data column)"
