@@ -120,8 +120,12 @@ dbt deps
 # Run dbt debug to ensure everything is configured correctly
 dbt debug
 
-# Build models (only if not already done)
+# Build models 
 dbt build
+
+# Test models
+dbt test
+
 ```
 
 **Important Notes:**
