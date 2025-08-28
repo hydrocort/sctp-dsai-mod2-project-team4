@@ -7,8 +7,10 @@ data directory at the project root. It handles both the Brazilian E-Commerce dat
 and the Marketing Funnel dataset.
 
 Requirements:
-- kaggle.json file in the project root for API authentication
+- .env file with KAGGLE_CREDENTIALS pointing to credentials/kaggle.json
+- OR kaggle.json file in credentials/ folder for API authentication
 - kaggle package installed (pip install kaggle)
+- python-dotenv package installed (pip install python-dotenv)
 
 Usage:
     python data_ingestion.py
@@ -30,7 +32,11 @@ import shutil
 import json
 import sys
 import warnings
+from dotenv import load_dotenv
 warnings.filterwarnings('ignore')
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def setup_kaggle_datasets():
@@ -50,11 +56,22 @@ def setup_kaggle_datasets():
     print("Setting up Olist E-commerce and Marketing Funnel datasets...")
     print("-" * 60)
     
-    # Check if kaggle.json exists in project root
-    kaggle_json_path = Path('./kaggle.json')
+    # Check for Kaggle credentials from environment variables or credentials folder
+    kaggle_credentials = os.getenv('KAGGLE_CREDENTIALS')
+    
+    if kaggle_credentials:
+        # Use the path from environment variable
+        kaggle_json_path = Path(kaggle_credentials)
+        print(f"✓ Using Kaggle credentials from: {kaggle_json_path}")
+    else:
+        # Fallback to credentials folder
+        kaggle_json_path = Path('credentials/kaggle.json')
+        print(f"✓ Using Kaggle credentials from: {kaggle_json_path}")
+    
     if not kaggle_json_path.exists():
-        print("❌ Error: kaggle.json file not found in project root!")
-        print("Please ensure your Kaggle API credentials are in kaggle.json")
+        print("❌ Error: Kaggle credentials file not found!")
+        print(f"Expected location: {kaggle_json_path}")
+        print("Please ensure your Kaggle API credentials are available")
         print("You can download it from: https://www.kaggle.com/settings -> API -> Create New API Token")
         return False
     

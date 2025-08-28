@@ -62,7 +62,7 @@ DATA_PATH=./data/brazilian-ecommerce/
 # Go to: https://www.kaggle.com/settings -> API -> Create New API Token
 # This will download a kaggle.json file
 
-# Place kaggle.json in the project root directory
+# Place kaggle.json in the credentials folder in project root directory (like your google service account credentials)
 # The script will automatically configure it for you
 ```
 

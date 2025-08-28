@@ -79,3 +79,4 @@ dependencies:
     # - click (for CLI tools)
     # - rich (for beautiful terminal output)
     # - uvicorn, starlette (for web servers)
+    - python-dotenv==1.0.0               # Environment variable management
