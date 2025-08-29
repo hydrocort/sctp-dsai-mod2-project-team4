@@ -211,6 +211,152 @@ def create_pie_chart(
     
     return fig
 
+def create_customer_behavior_pie_chart(
+    df: pd.DataFrame,
+    names_col: str,
+    values_col: str,
+    title: str,
+    height: int = 400
+) -> go.Figure:
+    """
+    Create a customer behavior pie chart with all possible segments shown in legend
+    
+    Args:
+        df: DataFrame with customer behavior data
+        names_col: Column name for segment labels
+        values_col: Column name for segment values
+        title: Chart title
+        height: Chart height
+        
+    Returns:
+        Plotly figure with enhanced legend
+    """
+    # Define all possible customer behavior segments with descriptions
+    all_segments = {
+        'One-Time Customer': 'One-Time Customer (1 order)',
+        'Regular Customer': 'Regular Customer (2-5 orders)',
+        'Loyal Customer': 'Loyal Customer (6+ orders)'
+    }
+    
+    # Create a complete dataset with all segments
+    complete_data = []
+    for segment, description in all_segments.items():
+        # Find if this segment exists in the data
+        segment_data = df[df[names_col] == segment]
+        if not segment_data.empty:
+            value = segment_data[values_col].iloc[0]
+            complete_data.append({'segment': description, 'value': value, 'original_name': segment})
+        else:
+            # Add segment with 0 value to ensure it appears in legend
+            complete_data.append({'segment': description, 'value': 0, 'original_name': segment})
+    
+    # Create pie chart with complete data
+    fig = px.pie(
+        pd.DataFrame(complete_data),
+        names='segment',
+        values='value',
+        title=title,
+        height=height
+    )
+    
+    # Update layout with enhanced styling
+    fig.update_layout(
+        title_x=0.5,
+        title_font_size=16,
+        showlegend=True,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=0.5,
+            xanchor="left",
+            x=1.02,
+            font=dict(size=12)
+        )
+    )
+    
+    # Hide segments with 0 values but keep them in legend
+    fig.update_traces(
+        hovertemplate="<b>%{label}</b><br>Customers: %{value}<extra></extra>",
+        textinfo="percent"
+    )
+    
+    return fig
+
+def create_customer_value_pie_chart(
+    df: pd.DataFrame,
+    names_col: str,
+    values_col: str,
+    title: str,
+    height: int = 400
+) -> go.Figure:
+    """
+    Create a customer value pie chart with all possible segments shown in legend
+    
+    Args:
+        df: DataFrame with customer value data
+        names_col: Column name for segment labels
+        values_col: Column name for segment values
+        title: Chart title
+        height: Chart height
+        
+    Returns:
+        Plotly figure with enhanced legend
+    """
+    # Define all possible customer value segments with descriptions
+    all_segments = {
+        'Low Value': 'Low Value (≤$100 spend)',
+        'Medium Value': 'Medium Value ($101-$500 spend)',
+        'High Value': 'High Value ($500+ spend)'
+    }
+    
+    # Create a complete dataset with all segments
+    complete_data = []
+    for segment, description in all_segments.items():
+        # Find if this segment exists in the data
+        segment_data = df[df[names_col] == segment]
+        if not segment_data.empty:
+            value = segment_data[values_col].iloc[0]
+            complete_data.append({'segment': description, 'value': value, 'original_name': segment})
+        else:
+            # Add segment with 0 value to ensure it appears in legend
+            complete_data.append({'segment': description, 'value': 0, 'original_name': segment})
+    
+    # Create pie chart with complete data
+    fig = px.pie(
+        pd.DataFrame(complete_data),
+        names='segment',
+        values='value',
+        title=title,
+        height=height
+    )
+    
+    # Update layout with enhanced styling
+    fig.update_layout(
+        title_x=0.5,
+        title_font_size=16,
+        showlegend=True,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=0.5,
+            xanchor="left",
+            x=1.02,
+            font=dict(size=12)
+        )
+    )
+    
+    # Hide segments with 0 values but keep them in legend
+    fig.update_traces(
+        hovertemplate="<b>%{label}</b><br>Revenue: $%{value:,.2f}<extra></extra>",
+        textinfo="percent"
+    )
+    
+    return fig
+
 def create_metric_card(
     label: str,
     value: str,
@@ -302,8 +448,6 @@ def create_sales_trend_chart(df: pd.DataFrame) -> go.Figure:
     # Update layout
     fig.update_layout(
         height=600,
-        title_text="Sales Performance Overview",
-        title_x=0.5,
         showlegend=False,
         plot_bgcolor='white',
         paper_bgcolor='white'
@@ -341,8 +485,8 @@ def create_regional_heatmap(df: pd.DataFrame) -> go.Figure:
         y=pivot_df.index,
         colorscale='Blues',
         text=pivot_df.values.round(2),
-        texttemplate="%{text}",
-        textfont={"size": 10},
+        texttemplate="%{text:,}",
+        textfont={"size": 14},
         hoverongaps=False
     ))
     
