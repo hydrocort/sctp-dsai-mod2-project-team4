@@ -29,6 +29,9 @@ dependencies:
   # Utilities
   - pathlib
   
+  # Environment variable management
+  - python-dotenv==1.0.0               
+
   # Pip for additional packages
   - pip
   
@@ -85,4 +88,3 @@ dependencies:
     # - uvicorn, starlette (for web servers)
     # - numpy, pandas, pyarrow (for data processing)
     # - google-cloud-bigquery (for BigQuery connectivity)
-    - python-dotenv==1.0.0               # Environment variable management
