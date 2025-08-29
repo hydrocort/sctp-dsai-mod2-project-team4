@@ -11,7 +11,7 @@ def test_credentials():
     """Test BigQuery credentials directly"""
     
     # Load credentials from the JSON file directly
-    credentials_path = "../credentials/sctp-dsai-468313-f5bc3e6b4ebe-innergritx.json"
+    credentials_path = "/home/chrisfkh/sctp-ds-ai/mod2/sctp-dsai-mod2-project-team4/credentials/sctp-dsai-468313-f5bc3e6b4ebe-innergritx.json"
     
     try:
         print("🔌 Testing BigQuery credentials directly...")

@@ -74,7 +74,7 @@ This dashboard provides insights into 8 critical business questions:
    ```toml
    [bigquery]
    project_id = "your-gcp-project-id"
-   dataset_id = "olist_marts"
+   dataset_id = "your-gcp-marts-dataset-name"
    location = "US"
    ```
 
@@ -84,7 +84,7 @@ Set these environment variables for local development:
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="path/to/service-account.json"
 export BIGQUERY_PROJECT_ID="your-gcp-project-id"
-export BIGQUERY_DATASET_ID="olist_marts"
+export BIGQUERY_DATASET_ID="your-gcp-marts-dataset-name"
 ```
 
 ## 📊 Dashboard Features
@@ -127,21 +127,6 @@ streamlit_dashboard/
 ├── requirements.txt              # Python dependencies
 └── README.md                     # This file
 ```
-
-### Adding New Features
-
-1. **New Business Question:**
-   - Add query function in `utils/data_queries.py`
-   - Create visualization in `utils/visualization_helpers.py`
-   - Add tab in `streamlit_app.py`
-
-2. **New Visualization Type:**
-   - Extend `utils/visualization_helpers.py`
-   - Follow existing color scheme and styling patterns
-
-3. **New Data Source:**
-   - Update `utils/bigquery_client.py`
-   - Add validation in `utils/data_queries.py`
 
 ### Code Style
 - Follow PEP 8 guidelines
@@ -231,21 +216,38 @@ Use the Data Explorer page to test BigQuery connectivity and validate table acce
 - `execute_query(query)` - Execute SQL query
 - `test_connection()` - Test BigQuery connectivity
 - `get_table_info()` - Get table metadata
+- `get_sample_data()` - Get sample data from table
+- `validate_table_exists()` - Check if table exists
 
 #### `utils.data_queries`
-- `get_monthly_sales_trends()` - Business question 1
-- `get_top_products_categories()` - Business question 2
-- `get_sales_by_region()` - Business question 3
-- `get_customer_behavior()` - Business question 4
-- `get_payment_analysis()` - Business question 5
-- `get_seller_performance()` - Business question 6
-- `get_reviews_sales_correlation()` - Business question 7
-- `get_delivery_patterns()` - Business question 8
+- `get_monthly_sales_trends()` - Business question 1: Monthly sales trends
+- `get_top_products_categories()` - Business question 2: Top products/categories performance
+- `get_sales_by_region()` - Business question 3: Geographic sales distribution
+- `get_sales_by_state()` - Geographic sales by Brazilian state
+- `get_customer_seller_flow()` - Customer-seller relationship analysis
+- `get_customer_behavior()` - Business question 4: Customer purchase behavior
+- `get_customer_segmentation()` - Customer segmentation analysis
+- `get_customer_frequency_analysis()` - Customer order frequency patterns
+- `get_payment_analysis()` - Business question 5: Payment method impact
+- `get_installment_analysis()` - Payment installment analysis
+- `get_seller_performance()` - Business question 6: Seller performance by region
+- `get_top_sellers()` - Top performing sellers ranking
+- `get_seller_product_diversity()` - Seller product variety analysis
+- `get_reviews_sales_correlation()` - Business question 7: Reviews-sales correlation
+- `get_review_score_distribution()` - Review score distribution analysis
+- `get_review_timing_analysis()` - Review timing patterns
+- `get_delivery_patterns()` - Business question 8: Delivery time patterns
+- `get_delivery_time_distribution()` - Delivery time distribution analysis
+- `get_delivery_efficiency_analysis()` - Delivery efficiency metrics
+- `get_dashboard_summary()` - Overall dashboard metrics and KPIs
 
 #### `utils.visualization_helpers`
 - `create_line_chart()` - Standardized line charts
 - `create_bar_chart()` - Standardized bar charts
 - `create_pie_chart()` - Standardized pie charts
+- `create_customer_behavior_pie_chart()` - Customer behavior visualization
+- `create_customer_value_pie_chart()` - Customer value segmentation
+- `create_metric_card()` - Metric display cards
 - `create_sales_trend_chart()` - Multi-metric sales overview
 - `create_regional_heatmap()` - Geographic analysis
 - `create_payment_method_chart()` - Payment analysis
