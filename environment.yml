@@ -69,6 +69,10 @@ dependencies:
     # ===== WEB APPLICATIONS & DASHBOARDS =====
     - streamlit==1.48.1               # Interactive web apps for ML/data science
     
+    # ===== STREAMLIT DASHBOARD DEPENDENCIES =====
+    - plotly==6.3.0                   # Interactive plotting library for Streamlit
+    - toml==0.10.2                    # TOML file parsing for Streamlit config
+    
     # ===== ADDITIONAL DEPENDENCIES =====
     # Note: The following packages are automatically installed as dependencies
     # but are listed here for transparency and version management:
@@ -79,4 +83,6 @@ dependencies:
     # - click (for CLI tools)
     # - rich (for beautiful terminal output)
     # - uvicorn, starlette (for web servers)
+    # - numpy, pandas, pyarrow (for data processing)
+    # - google-cloud-bigquery (for BigQuery connectivity)
     - python-dotenv==1.0.0               # Environment variable management
