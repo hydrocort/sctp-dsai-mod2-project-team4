@@ -1,6 +1,6 @@
 # Credentials and API keys
-kaggle.json
 credentials/
+kaggle.json
 *.json
 *-key.json
 service-account*.json
