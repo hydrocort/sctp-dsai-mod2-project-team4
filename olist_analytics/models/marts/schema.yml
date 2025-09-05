@@ -10,8 +10,8 @@ models:
         tests:
           - not_null
           - unique
-      - name: customer_unique_id
-        description: "Customer's unique identifier across the platform"
+      - name: customer_id_original
+        description: "Customer's original ID from orders table"
         tests:
           - not_null
       - name: customer_city
