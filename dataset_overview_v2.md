@@ -9,7 +9,7 @@ This document provides an overview of the initial data profiling conducted on ou
 - **Shape**: 99,441 rows × 5 columns
 - **Memory Usage**: 29.62 MB
 - **Columns**: 
-  1. `customer_id` - Unique identifier for each customer
+  1. `customer_id` - Unique identifier for each customer per order
   2. `customer_unique_id` - Unique identifier for each customer across multiple orders
   3. `customer_zip_code_prefix` - First five digits of the customer's zip code
   4. `customer_city` - City where the customer is located
