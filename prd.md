@@ -14,11 +14,11 @@ The data pipeline and analytics solution must be capable of answering the follow
 
 3. **Geographic Sales Distribution**: How do sales vary across Brazilian regions, states, and cities for both customers and sellers?
 
-4. **Customer Purchase Behavior**: What are the patterns in customer purchasing frequency, order values, and lifetime value across different customer segments?
+4. **Customer Purchase Behavior**: What are the patterns in customer purchasing frequency, order values, and lifetime value across different customer segments and economic zones?
 
-5. **Payment Method Impact**: How do different payment methods (credit card, boleto, voucher) correlate with sales volumes and order values?
+5. **Payment Method Impact**: How do different payment methods (credit card, boleto, voucher, debit card) correlate with sales volumes and order values, including installment patterns?
 
-6. **Seller Performance Analysis**: Which sellers and regions perform best in terms of revenue generation, order fulfillment, and product diversity?
+6. **Seller Performance Analysis**: Which sellers and regions perform best in terms of revenue generation, order fulfillment, and product diversity across economic zones?
 
 7. **Product Reviews and Sales Correlation**: How do customer review scores and review availability impact sales performance and customer behavior?
 
@@ -38,7 +38,7 @@ The data pipeline and analytics solution must be capable of answering the follow
 | `order_item_sk` | STRING | Surrogate key for each order item | Generated: `CONCAT(order_id, '-', order_item_id)` |
 | **Foreign Keys** |
 | `order_key` | STRING | Reference to DimOrders | From `order_items.order_id` |
-| `customer_key` | STRING | Reference to DimCustomers | From `orders.customer_id` via join on `order_items.order_id` |
+| `customer_key` | STRING | Reference to DimCustomers | From `customers.customer_unique_id` via join on `orders.customer_id` |
 | `product_key` | STRING | Reference to DimProducts | From `order_items.product_id` |
 | `seller_key` | STRING | Reference to DimSellers | From `order_items.seller_id` |
 | `date_key` | STRING | Reference to DimDate | From `orders.order_purchase_timestamp` (YYYY-MM-DD format) |
@@ -48,7 +48,14 @@ The data pipeline and analytics solution must be capable of answering the follow
 | `item_price` | NUMERIC | Price paid for the item | From `order_items.price` |
 | `freight_value` | NUMERIC | Shipping cost for the item | From `order_items.freight_value` |
 | `total_item_value` | NUMERIC | Total cost including shipping | Calculated: `price + freight_value` |
-| `payment_value` | NUMERIC | Total payment amount for order | From `order_payments.payment_value` (aggregated if multiple payments) |
+| `payment_value` | NUMERIC | Total payment amount for order | From `dim_payments.total_payment_value` |
+| `total_installments` | INTEGER | Total installments for order | From `dim_payments.total_installments` |
+| `payment_methods_count` | INTEGER | Count of distinct payment methods | From `dim_payments.payment_methods_count` |
+| `uses_credit_card` | BOOLEAN | Whether order used credit card | From `dim_payments.uses_credit_card` |
+| `uses_boleto` | BOOLEAN | Whether order used boleto | From `dim_payments.uses_boleto` |
+| `uses_voucher` | BOOLEAN | Whether order used voucher | From `dim_payments.uses_voucher` |
+| `uses_debit_card` | BOOLEAN | Whether order used debit card | From `dim_payments.uses_debit_card` |
+| `primary_payment_type` | STRING | Primary payment method for order | From `dim_payments.primary_payment_type` |
 | `quantity` | INTEGER | Number of items | Static value of 1 per row |
 
 ### Dimension Tables
@@ -56,12 +63,14 @@ The data pipeline and analytics solution must be capable of answering the follow
 #### DimCustomers
 | Column Name | Data Type | Source/Transformation |
 |-------------|-----------|----------------------|
-| `customer_key` | STRING | From `customers.customer_id` |
-| `customer_unique_id` | STRING | From `customers.customer_unique_id` |
+| `customer_key` | STRING | From `customers.customer_unique_id` (unique customer identifier) |
+| `customer_id_original` | STRING | From `customers.customer_id` (any value per unique customer) |
 | `customer_city` | STRING | From `customers.customer_city` |
 | `customer_state` | STRING | From `customers.customer_state` |
 | `customer_zip_prefix` | STRING | From `customers.customer_zip_code_prefix` |
 | `customer_region` | STRING | From `brazil_state_regions` seed via join on `customer_state` |
+| `customer_economic_zone` | STRING | From `brazil_state_regions.economic_zone` via join |
+| `customer_state_name` | STRING | From `brazil_state_regions.state_name` via join |
 
 #### DimProducts
 | Column Name | Data Type | Source/Transformation |
@@ -86,6 +95,8 @@ The data pipeline and analytics solution must be capable of answering the follow
 | `seller_state` | STRING | From `sellers.seller_state` |
 | `seller_zip_prefix` | STRING | From `sellers.seller_zip_code_prefix` |
 | `seller_region` | STRING | From `brazil_state_regions` seed via join on `seller_state` |
+| `seller_economic_zone` | STRING | From `brazil_state_regions.economic_zone` via join |
+| `seller_state_name` | STRING | From `brazil_state_regions.state_name` via join |
 
 #### DimDate
 | Column Name | Data Type | Source/Transformation |
@@ -118,12 +129,15 @@ The data pipeline and analytics solution must be capable of answering the follow
 | Column Name | Data Type | Source/Transformation |
 |-------------|-----------|----------------------|
 | `payment_key` | STRING | From `order_payments.order_id` (one record per order) |
-| `primary_payment_type` | STRING | Most frequent `payment_type` for the order via aggregation |
+| `primary_payment_type` | STRING | First `payment_type` by sequence for the order |
+| `total_payment_value` | NUMERIC | Total payment amount for order | From `order_payments.payment_value` (summed) |
 | `total_installments` | INTEGER | Sum of `payment_installments` for the order |
 | `payment_methods_count` | INTEGER | Count of distinct payment methods used per order |
+| `payment_transactions_count` | INTEGER | Count of payment transactions per order |
 | `uses_credit_card` | BOOLEAN | Whether order used credit card payment |
 | `uses_boleto` | BOOLEAN | Whether order used boleto payment |
 | `uses_voucher` | BOOLEAN | Whether order used voucher payment |
+| `uses_debit_card` | BOOLEAN | Whether order used debit card payment |
 
 #### DimReviews
 | Column Name | Data Type | Source/Transformation |
@@ -148,7 +162,8 @@ The data pipeline and analytics solution must be capable of answering the follow
 Complete seed data includes all 27 Brazilian states plus Federal District covering: AC, AL, AM, AP, BA, CE, DF, ES, GO, MA, MG, MS, MT, PA, PB, PE, PI, PR, RJ, RN, RO, RR, RS, SC, SP, SE, TO.
 
 ### Star Schema Diagram
-![Olist E-Commerce Star Schema v2](olist_ecommerce_star_schema_v2.png)
+![Olist E-Commerce Star Schema v2](olist_ecommerce_star_schema_v3.png)
+
 Note: The brazil_state_regions seed table appears disconnected in the diagram because it doesn't have direct foreign key relationships defined in the schema. Instead, it's used through JOIN operations during the data transformation process in dbt.
 
 
@@ -205,9 +220,9 @@ seeds:
 1. **Monthly Sales Trends**: DimDate (year, month, month_name) + FactSales measures (total_item_value, payment_value)
 2. **Top Products/Categories**: DimProducts (product_category_english) + FactSales aggregations
 3. **Geographic Sales Distribution**: DimCustomers.customer_region + DimSellers.seller_region + FactSales measures
-4. **Customer Purchase Behavior**: DimCustomers + FactSales (frequency via COUNT, value via SUM)
-5. **Payment Method Impact**: DimPayments (primary_payment_type, payment flags) + FactSales measures
-6. **Seller Performance**: DimSellers + FactSales aggregations by seller and region
+4. **Customer Purchase Behavior**: DimCustomers (including economic zones) + FactSales (frequency via COUNT, value via SUM)
+5. **Payment Method Impact**: DimPayments (primary_payment_type, payment flags, installments) + FactSales measures
+6. **Seller Performance**: DimSellers (including economic zones) + FactSales aggregations by seller and region
 7. **Reviews Correlation**: DimReviews.review_score + FactSales measures (with null handling for missing reviews)
 8. **Delivery Patterns**: DimOrders delivery metrics + DimDate for temporal analysis + DimCustomers for regional patterns
 
@@ -228,6 +243,19 @@ seeds:
 - **Payment Behavior**: Aggregate payment methods per order in DimPayments with boolean flags
 - **Product Dimensions**: Calculate volume and enrich with English category names
 
+### Enhanced Regional Classifications
+- **Economic Zones**: Added economic zone classification (Amazon, Northeast, Southeast, South, Central) for both customers and sellers
+- **State Names**: Added full state names for better display and reporting
+
+### Payment Aggregation Strategy
+- **Order-Level Aggregation**: Payment data is aggregated at the order level in DimPayments and then joined to the fact table
+- **Payment Flags**: Boolean flags for each payment method type for easy filtering and analysis
+- **Transaction Counting**: Track both payment methods count and individual transaction count per order
+
+### Customer Identification Strategy
+- **Unique Customer Focus**: Use `customer_unique_id` as the primary identifier to handle cases where one customer has multiple `customer_id` values
+- **Original ID Preservation**: Maintain `customer_id_original` for traceability back to source data
+
 
 ## Detailed Transformation Requirements
 
@@ -246,7 +274,12 @@ seeds:
 ```sql
 -- Join customers/sellers with seed for regional classification
 LEFT JOIN {{ ref('brazil_state_regions') }} r
-    ON customer_state = r.state_code
+    ON UPPER(customer_state) = UPPER(r.state_code)
+
+-- Enhanced regional data includes economic zones and state names
+COALESCE(r.region, 'Unknown') as customer_region,
+COALESCE(r.economic_zone, 'Unknown') as customer_economic_zone,
+COALESCE(r.state_name, customer_state) as customer_state_name
 ```
 
 **Delivery Performance Calculations**:
@@ -271,7 +304,11 @@ END as is_delivered_on_time
 **Payment Aggregation**:
 ```sql
 -- Aggregate payment methods per order in DimPayments
-MAX(CASE WHEN payment_type = 'credit_card' THEN TRUE ELSE FALSE END) as uses_credit_card
+MAX(CASE WHEN payment_type = 'credit_card' THEN TRUE ELSE FALSE END) as uses_credit_card,
+MAX(CASE WHEN payment_type = 'debit_card' THEN TRUE ELSE FALSE END) as uses_debit_card,
+ARRAY_AGG(payment_type ORDER BY payment_sequential LIMIT 1)[OFFSET(0)] as primary_payment_type,
+SUM(payment_value) as total_payment_value,
+COUNT(DISTINCT payment_type) as payment_methods_count
 ```
 
 **Product Volume Calculation**:
@@ -432,13 +469,17 @@ your-gcp-project-id/
 
 **Data Completeness Validations**:
 - All order items should have corresponding payment records
-- Customer and seller regional assignments should be complete
+- Customer and seller regional assignments should be complete (including economic zones)
 - Product category translations should be available for all products
+- Customer unique ID assignments should be complete and consistent
+- Payment method flags should be properly populated for all orders
 
 **Analytical Consistency Validations**:
 - Monthly sales totals should show reasonable business patterns
 - Regional distributions should align with Brazilian geography
+- Economic zone assignments should be consistent with state codes
 - Delivery time calculations should be logical (positive days, reasonable ranges)
+- Payment method combinations should be logical (e.g., installment counts match payment types)
 
 ## Dagster Integration Points
 
@@ -510,9 +551,9 @@ your-gcp-project-id/
 - `get_monthly_sales_trends()`: Aggregate sales metrics by month/year from FactSales + DimDate
 - `get_top_products_categories()`: Product performance analysis from FactSales + DimProducts  
 - `get_sales_by_region()`: Geographic analysis from FactSales + DimCustomers + DimSellers
-- `get_customer_behavior()`: Customer analytics from FactSales + DimCustomers aggregations
-- `get_payment_analysis()`: Payment method impact from FactSales + DimPayments
-- `get_seller_performance()`: Seller metrics from FactSales + DimSellers
+- `get_customer_behavior()`: Customer analytics from FactSales + DimCustomers aggregations (including economic zone analysis)
+- `get_payment_analysis()`: Payment method impact from FactSales + DimPayments (including debit card and installment analysis)
+- `get_seller_performance()`: Seller metrics from FactSales + DimSellers (including economic zone analysis)
 - `get_reviews_sales_correlation()`: Review impact analysis from FactSales + DimReviews (with null handling)
 - `get_delivery_patterns()`: Delivery analytics from FactSales + DimOrders + regional dimensions
 
