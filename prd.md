@@ -217,14 +217,14 @@ seeds:
 
 ## How Schema Answers Business Questions
 
-1. **Monthly Sales Trends**: DimDate (year, month, month_name) + FactSales measures (total_item_value, payment_value)
-2. **Top Products/Categories**: DimProducts (product_category_english) + FactSales aggregations
-3. **Geographic Sales Distribution**: DimCustomers.customer_region + DimSellers.seller_region + FactSales measures
-4. **Customer Purchase Behavior**: DimCustomers (including economic zones) + FactSales (frequency via COUNT, value via SUM)
-5. **Payment Method Impact**: DimPayments (primary_payment_type, payment flags, installments) + FactSales measures
-6. **Seller Performance**: DimSellers (including economic zones) + FactSales aggregations by seller and region
-7. **Reviews Correlation**: DimReviews.review_score + FactSales measures (with null handling for missing reviews)
-8. **Delivery Patterns**: DimOrders delivery metrics + DimDate for temporal analysis + DimCustomers for regional patterns
+1. **Monthly Sales Trends**: `dim_date` (year, month, month_name) + `fact_sales` measures (`total_item_value` as sales) with optional regional filter via `dim_customers.customer_region`.
+2. **Top Products/Categories**: `dim_products.product_category_english` joined to `fact_sales` to aggregate items, revenue, avg item value, and freight.
+3. **Geographic Sales Distribution**: `dim_customers.customer_region` + `dim_sellers.seller_region` with `fact_sales` measures; state-level views via `dim_customers.customer_state`.
+4. **Customer Purchase Behavior**: `fact_sales` aggregated to order and customer levels + `dim_customers.customer_region` for segmentation (order_count, LTV, repeat rate). 
+5. **Payment Method Impact**: `dim_payments` (primary_payment_type, boolean flags, total_installments) joined to `fact_sales` to analyze orders, sales, AOV, and installment patterns.
+6. **Seller Performance**: `dim_sellers.seller_region` + `fact_sales` aggregations (revenue, orders, unique products), including top sellers and product diversity. 
+7. **Reviews Correlation**: `dim_reviews` LEFT joined to `fact_sales` (NULL treated as "No Review"); analyses by review category/score and timing using `dim_reviews.days_to_review` and order dates.
+8. **Delivery Patterns**: `dim_orders` delivery metrics (`days_to_delivery`, `delivery_vs_estimate_days`, `is_delivered_on_time`) + `dim_customers.customer_region` and `dim_date` for filters and trends; includes same vs cross-region efficiency using customer vs seller regions.
 
 ## Key Schema Design Decisions
 
