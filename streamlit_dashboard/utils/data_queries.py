@@ -37,7 +37,7 @@ def get_monthly_sales_trends(year_filter: Optional[str] = None, region_filter: O
         
         query = f"""
         SELECT 
-            FORMAT_DATE('%Y-%m', d.full_date) as month_year,
+            FORMAT_DATE('%Y-%m', MIN(d.full_date)) as month_year,
             d.year,
             d.month,
             d.month_name,
@@ -45,13 +45,13 @@ def get_monthly_sales_trends(year_filter: Optional[str] = None, region_filter: O
             COUNT(f.order_item_sk) as total_items,
             ROUND(SUM(f.total_item_value), 2) as total_sales,
             ROUND(SUM(f.payment_value), 2) as total_payments,
-            ROUND(AVG(f.total_item_value), 2) as avg_order_value,
-            ROUND(AVG(f.payment_value), 2) as avg_payment_value
+            ROUND(SUM(f.total_item_value) / COUNT(DISTINCT f.order_key), 2) as avg_order_value,
+            ROUND(SUM(f.payment_value) / COUNT(DISTINCT f.order_key), 2) as avg_payment_value
         FROM `olist_marts.fact_sales` f
         JOIN `olist_marts.dim_date` d ON f.date_key = d.date_key
         JOIN `olist_marts.dim_customers` c ON f.customer_key = c.customer_key
         WHERE 1=1 {year_condition} {region_condition}
-        GROUP BY d.year, d.month, d.month_name, d.full_date
+        GROUP BY d.year, d.month, d.month_name
         ORDER BY d.year, d.month
         """
         

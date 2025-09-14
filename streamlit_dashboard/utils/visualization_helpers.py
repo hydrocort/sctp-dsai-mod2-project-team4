@@ -400,14 +400,14 @@ def create_sales_trend_chart(df: pd.DataFrame) -> go.Figure:
                [{"secondary_y": False}, {"secondary_y": False}]]
     )
     
-    # Add traces
+    # Add traces (pure line charts for better trend visualization)
     fig.add_trace(
         go.Scatter(
             x=df['month_year'], 
             y=df['total_sales'],
-            mode='lines+markers',
+            mode='lines',
             name='Total Sales',
-            line=dict(color=COLOR_SCHEMES['primary'][0])
+            line=dict(color=COLOR_SCHEMES['primary'][0], width=2)
         ),
         row=1, col=1
     )
@@ -416,9 +416,9 @@ def create_sales_trend_chart(df: pd.DataFrame) -> go.Figure:
         go.Scatter(
             x=df['month_year'], 
             y=df['total_orders'],
-            mode='lines+markers',
+            mode='lines',
             name='Total Orders',
-            line=dict(color=COLOR_SCHEMES['primary'][1])
+            line=dict(color=COLOR_SCHEMES['primary'][1], width=2)
         ),
         row=1, col=2
     )
@@ -427,9 +427,9 @@ def create_sales_trend_chart(df: pd.DataFrame) -> go.Figure:
         go.Scatter(
             x=df['month_year'], 
             y=df['avg_order_value'],
-            mode='lines+markers',
+            mode='lines',
             name='Avg Order Value',
-            line=dict(color=COLOR_SCHEMES['primary'][2])
+            line=dict(color=COLOR_SCHEMES['primary'][2], width=2)
         ),
         row=2, col=1
     )
@@ -438,9 +438,9 @@ def create_sales_trend_chart(df: pd.DataFrame) -> go.Figure:
         go.Scatter(
             x=df['month_year'], 
             y=df['total_items'],
-            mode='lines+markers',
+            mode='lines',
             name='Total Items',
-            line=dict(color=COLOR_SCHEMES['primary'][3])
+            line=dict(color=COLOR_SCHEMES['primary'][3], width=2)
         ),
         row=2, col=2
     )
